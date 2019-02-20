@@ -55,10 +55,14 @@ function moodyGateKeeper(req, res, next) {
 function restricted(req, res, next) {
   const password = req.headers.authorization;
 
-  if (password === 'mellon') {
-    next();
+  if (req.headers && req.headers.authorization) {
+    if (password === 'mellon') {
+      next();
+    } else {
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
   } else {
-    res.status(401).json({ message: 'Invalid credentials' });
+    next({ message: 'no authorization header provided' });
   }
 }
 

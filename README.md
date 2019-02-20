@@ -20,7 +20,11 @@ Data for the API will be stored in memory using an array.
 
 Use the content on Training Kit to introduce the `middleware`.
 
-Explain there are three types and they have seen an example of _build-in middleware_ when they used `express.json()`.
+Cover the three types.
+
+- built-in.
+- third party.
+- custom.
 
 ## Use Third Party Middleware
 
@@ -128,7 +132,7 @@ What if we want to add middleware that affects a set of endpoints, but not other
 ## Use Middleware Locally
 
 1. Make a GET request to `/api/hubs` to verify it works.
-2. Write middleware that reads a password from the `authentication` header, and if it is 'mellon' the request can continue, otherwise the API responds with a `401` status code and a message.
+2. Write middleware that reads a password from the `authentication` header, and if it is '_mellon_' the request can continue, otherwise the API responds with a `401` status code and a message.
 
 ```js
 function restricted(req, res, next) {
@@ -159,9 +163,11 @@ One possible solution:
 
 ```js
 function only(name) {
+  // returns the middleware
   return function(req, res, next) {
     const personName = req.headers.name || ''; // just in case there is no name header provided
 
+    // this function can use the parameter passed to the wrapper function
     if (personName.toLowerCase() === name.toLowerCase()) {
       next();
     } else {
@@ -174,3 +180,46 @@ function only(name) {
 Note that we can use more than one local `middleware`. We are using `restricted` and `only()` so we need to add both headers.
 
 Test without with different combinations of _authorization_ and _name_ headers.
+
+## Write Error Handling Middleware
+
+Use the content on TK to introduce how error handling middleware works. **Emphasize that order matters**, error handling middleware can catch errors that happen on all route handlers and middleware that precede it.
+
+Right before `module.exports = server;` write a catch-all error handling middleware:
+
+```js
+// look, four homies! the first argument is new
+function errorHandler(error, req, res, next) {
+  // here you could inspect the error and decide how to respond
+  res.status(400).json({ message: 'Bad Panda!', error });
+}
+```
+
+We can route the request to the error handling middleware from any middleware or endpoint by calling `next()` passing **any** argument, doesn't have to be a proper `Error` object.
+
+Change the `restricted` middleware to fire the error handling middleware if there is no _authorization_ header.
+
+```js
+function restricted(req, res, next) {
+  const password = req.headers.authorization;
+
+  if (req.headers && req.headers.authorization) {
+    if (password === 'mellon') {
+      next();
+    } else {
+      res.status(401).json({ message: 'Invalid credentials' });
+    }
+  } else {
+    // fire the next error handling middleware in the chain
+    next({ message: 'no authorization header provided' });
+  }
+}
+```
+
+Make a request to `/api/hubs` without attaching the _authorization header_. Confirm that the response comes from the error handling middleware with a status of `400`.
+
+Make a request to `/api/hubs` attaching the _authorization header_ with a wrong password. Confirm that the response comes from the `restricted` middleware with a status of `401`.
+
+Make a request to `/api/hubs` attaching the _authorization header_ with a correct password. Confirm that the request is routed to the endpoint.
+
+**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
