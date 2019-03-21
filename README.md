@@ -14,8 +14,6 @@ The code for the guided project will be written in a single file for simplicity.
 
 The [starter code](https://github.com/LambdaSchool/webapi-iii-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
 
-Data for the API will be stored in memory using an array.
-
 ## How to Use this Repository
 
 - clone the [starter code](https://github.com/LambdaSchool/webapi-iii-guided).
