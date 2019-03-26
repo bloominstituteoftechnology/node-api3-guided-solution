@@ -72,7 +72,7 @@ Next, we'll learn how to create the other type of middleware: `custom middleware
 2. Add this middleware before the route handlers:
 
 ```js
-// just like that, the homies become the three amigos
+// just like that, the homies become the three amigos (courtesy of Joshua Keslar from Web 17)
 server.use((req, res, next) => {
   res.status(404).send("Ain't nobody got time for that");
 });
