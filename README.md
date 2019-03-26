@@ -191,7 +191,7 @@ function only(name) {
 
 Note that we can use more than one local `middleware`. We are using `restricted` and `only()` so we need to add both headers.
 
-Test without with different combinations of _authorization_ and _name_ headers.
+Test with different combinations of _authorization_ and _name_ headers.
 
 ## Write Error Handling Middleware
 
