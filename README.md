@@ -148,7 +148,7 @@ What if we want to add middleware that affects a set of endpoints, but not other
 
 ```js
 function restricted(req, res, next) {
-  const password = req.headers.authorization;
+  const password = req.headers.password;
 
   if (password === 'mellon') {
     next();
