@@ -160,7 +160,7 @@ function restricted(req, res, next) {
 
 3. Use the `middleware` locally for the `/api/hubs` endpoints: `server.use('/api/hubs', restricted, hubsRouter);`.
 4. Make a GET request to `/api/hubs` to verify it returns a `401` status code.
-5. Show how to add the `Authentication` header using `Postman`.
+5. Show how to add the `password` header using `Postman`.
 6. Test the endpoint with correct and incorrect passwords.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
