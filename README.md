@@ -221,9 +221,8 @@ router.post('/:id/messages', validateId, (req, res) => {});
 
 ```js
 router.get('/:id', validateId, (req, res) => {
-  // we can greatly simplify this logic now 
-  const { hub } = req;
-  res.status(200).json(hub);
+  // we can greatly simplify this logic 
+  res.status(200).json(req.hub);
 });
 ```
 
@@ -262,45 +261,47 @@ Note that we can use more than one local `middleware`, such as on `PUT /api/hubs
 
 Test with the endpoints with missing bodies.
 
-## Write Error Handling Middleware
+## OPTIONAL IF TIME PERMITS: Write Error Handling Middleware
 
 Use the content on TK to introduce how error handling middleware works. **Emphasize that order matters**, error handling middleware can catch errors that happen on all route handlers and middleware that precede it.
 
-Right before `module.exports = server;` write a catch-all error handling middleware:
+Right before `module.exports = server;` on `server.js` write a catch-all error handling middleware:
 
 ```js
 // look, four homies! the first argument is new
-function errorHandler(error, req, res, next) {
+server.use((error, req, res, next) {
   // here you could inspect the error and decide how to respond
   res.status(400).json({ message: 'Bad Panda!', error });
-}
+});
 ```
 
 We can route the request to the error handling middleware from any middleware or endpoint by calling `next()` passing **any** argument, doesn't have to be a proper `Error` object.
 
-Change the `restricted` middleware to fire the error handling middleware if there is no _authorization_ header.
+Change the `requiredBody` and `validateId` middleware to fire the error handling middleware.
 
 ```js
-function restricted(req, res, next) {
-  const password = req.headers.authorization;
-
-  if (req.headers && req.headers.authorization) {
-    if (password === 'mellon') {
-      next();
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
-    }
+async function validateId(req, res, next) {
+  const { id } = req.params;
+  const hub = await Hubs.findById(id);
+  if (hub) {
+    req.hub = hub;
+    next();
   } else {
-    // fire the next error handling middleware in the chain
-    next({ message: 'no authorization header provided' });
+    // CHANGE CODE HERE:
+    next({ message: "Invalid id; hub not found"});
+  }
+}
+
+function requiredBody(req, res, next) {
+  if (req.body && Object.keys(req.body).length > 0) {
+    next();
+  } else {
+    // CHANGE CODE HERE:
+    next({ message: "Please include request body" }));
   }
 }
 ```
 
-Make a request to `/api/hubs` without attaching the _authorization header_. Confirm that the response comes from the error handling middleware with a status of `400`.
-
-Make a request to `/api/hubs` attaching the _authorization header_ with a wrong password. Confirm that the response comes from the `restricted` middleware with a status of `401`.
-
-Make a request to `/api/hubs` attaching the _authorization header_ with a correct password. Confirm that the request is routed to the endpoint.
+Make a request with an invalid id and with a missing body to confirm that the error handler is firing.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**

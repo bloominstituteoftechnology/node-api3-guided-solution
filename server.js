@@ -55,4 +55,10 @@ function moodyGateKeeper(req, res, next) {
   }
 }
 
+// error handling middleware
+server.use((error, req, res, next) => {
+  // here you could inspect the error and decide how to respond
+  res.status(400).json({ message: 'Bad Panda!', error });
+});
+
 module.exports = server;

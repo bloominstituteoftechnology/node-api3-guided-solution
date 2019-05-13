@@ -25,10 +25,8 @@ router.get('/', async (req, res) => {
 });
 
 // /api/hubs/:id
-
 router.get('/:id', validateId, async (req, res) => {
-  const { hub } = req;
-  res.status(200).json(hub);
+  res.status(200).json(req.hub);
 });
 
 router.post('/', requiredBody, async (req, res) => {
@@ -117,7 +115,10 @@ async function validateId(req, res, next) {
     req.hub = hub;
     next();
   } else {
-    res.status(404).json({ message: "Invalid id; hub not found"})
+    res.status(404).json({ message: "Invalid id; hub not found"});
+    
+    // error handling middleware option:
+    // next({ message: "Invalid id; hub not found"});
   }
 }
 
@@ -126,6 +127,9 @@ function requiredBody(req, res, next) {
     next();
   } else {
     res.status(400).json({ message: "Please include request body" });
+  
+    // error handling middleware option:
+    // next({ message: "Please include request body" }));
   }
 }
 
