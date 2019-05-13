@@ -27,16 +27,8 @@ router.get('/', async (req, res) => {
 // /api/hubs/:id
 
 router.get('/:id', validateId, async (req, res) => {
-  try {
-    const { hub } = req;
-    res.status(200).json(hub);
-  } catch (error) {
-    // log error to server
-    console.log(error);
-    res.status(500).json({
-      message: 'Error retrieving the hub',
-    });
-  }
+  const { hub } = req;
+  res.status(200).json(hub);
 });
 
 router.post('/', requiredBody, async (req, res) => {
@@ -69,7 +61,7 @@ router.delete('/:id', validateId, async (req, res) => {
   }
 });
 
-router.put('/:id', validateId, async (req, res) => {
+router.put('/:id', [ validateId, requiredBody], async (req, res) => {
   try {
     const hub = await Hubs.update(req.params.id, req.body);
     if (hub) {
@@ -120,16 +112,12 @@ router.post('/:id/messages', [ validateId, requiredBody ], async (req, res) => {
 
 async function validateId(req, res, next) {
   const { id } = req.params;
-  if (id) {
-    const hub = await Hubs.findById(id);
-    if (hub) {
-      req.hub = hub;
-      next();
-    } else {
-      res.status(404).json({ message: "Invalid id; hub not found"})
-    }
-  } else {
+  const hub = await Hubs.findById(id);
+  if (hub) {
+    req.hub = hub;
     next();
+  } else {
+    res.status(404).json({ message: "Invalid id; hub not found"})
   }
 }
 

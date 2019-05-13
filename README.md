@@ -69,53 +69,76 @@ Next, we'll learn how to create the other type of middleware: `custom middleware
 ## Write Custom Middleware
 
 1. Explain how _custom middleware_ works.
-2. Add this middleware before the route handlers:
+2. Add this global middleware to `server.js` below the `GET /` endpoint:
 
 ```js
 // just like that, the homies become the three amigos (courtesy of Joshua Keslar from Web 17)
-server.use((req, res, next) => {
-  res.status(404).send("Ain't nobody got time for that");
-});
+function methodLogger(req, res, next) {
+  console.log(`${req.method} Request`);
+  next();
+}
 ```
 
-3. Explain that middleware can be used _globally_ and _locally_, in this example we're using it globally, so all requests will get rejected with a `404` code.
+3. Explain that middleware can be used _globally_ and _locally_, in this example we're using it globally, which means we push add it before all endpoints. All requests will include an extra log statement including the request method. Plug in this middleware below the third-party global middleware:
+
+```js
+server.use(methodLogger);
+```
+
 4. Visit any endpoint to verify the middleware is working.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
-A middleware that blocks all requests is not useful, let's write a piece of middleware that adds information to the `request` object.
+Let's write a piece of middleware that adds information to the `request` object. Note that the `GET /` enpoint is looking for `req.name`.
 
 ## Use Custom Middleware to Modify the Request Object
 
-1. Comment out the middleware that returns `404` for all requests.
-1. Modify the `GET /` endpoint:
+1. Write the `addName` middleware below the `methodLogger` code:
 
 ```js
-server.get('/', (req, res, next) => {
-  res.send(`
-    <h2>Lambda Hubs API</h2>
-    <p>Welcome ${req.team}, to the Lambda Hubs API</p>
-    `);
-});
-```
-
-2. Make a request to the server and show that we get `undefined` as the value for `req.team`.
-3. Write custom middleware to fix that:
-
-```js
-function teamNamer(req, res, next) {
-  // we can add properties to the request and response objects
-  req.team = 'Lambda Students';
-
-  // if we don't call next the request will hang and clients will time out.
-  next(); // calling next continues to the next middleware/route handler
+function methodLogger(req, res, next) {
+ ...
 }
+
+function addName(req, res, next) {
+  req.name = "Cassandra";
+  next();
+};
 ```
 
-4. `Use` the middleware before the route handlers: `server.use(teamNamer)`.
+2. Make a request to the server and show that we are still not seeing the name appear.
+3. `Use` the middleware before the route handlers: `server.use(addName)`.
 5. Make a new request. The value was set by the _middleware_.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+
+Custom middleware can also cancel the request and send back a response using the `res` parameter.
+
+## Use Custom Middleware to Cancel a Request
+
+1. Write the `lockout` middleware below the `addName` code:
+
+```js
+function methodLogger(req, res, next) {
+ ...
+}
+
+function addName(req, res, next) {
+ ...
+};
+
+function lockout(req, res, next) {
+  res.status(403).json({ message: 'API lockout!'});
+}
+```
+
+3. `Use` the middleware before the route handlers: `server.use(lockout)`.
+5. Make requests to various endpoints to show we are locked out. 
+6. This middleware disables our entire api, so comment out where it is used:
+
+```js
+// server.use(lockout);
+```
 
 ### You Do (estimated 5 min to complete)
 
@@ -143,55 +166,101 @@ What if we want to add middleware that affects a set of endpoints, but not other
 
 ## Use Middleware Locally
 
-1. Make a GET request to `/api/hubs` to verify it works.
-2. Write middleware that reads a password from the `authentication` header, and if it is '_mellon_' the request can continue, otherwise the API responds with a `401` status code and a message.
+1. Go to `hubs/hubs-router.js` file.
+2. Add the following piece of middleware at the top of the file. Note that `router.use` is also a function. 
 
 ```js
-function restricted(req, res, next) {
-  const password = req.headers.password;
+router.use((req, res, next) => {
+  console.log('Hubs Router!');
+  next();
+});
+```
+3. Hit several endpoints on this router to verify that it works.
+4. Make a `GET /` request to verify that the middleware does not execute. 
 
-  if (password === 'mellon') {
+**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+
+Let's write something more useful that will help us send back detailed error messages to the client.
+
+### Hub Id Validation Middleware
+
+1. At the bottom of the `hubs-router` file, write the following middleware:
+
+```js
+async function validateId(req, res, next) {
+  const { id } = req.params;
+  const hub = await Hubs.findById(id);
+  if (hub) {
+    // if the hub is found, we can store it in the req in case we need it in the request
+    req.hub = hub;
     next();
   } else {
-    res.status(401).json({ message: 'Invalid credentials' });
+    // if the id is invalid and send back a detailed errore message
+    res.status(404).json({ message: "Invalid id; hub not found"})
   }
 }
 ```
 
-3. Use the `middleware` locally for the `/api/hubs` endpoints: `server.use('/api/hubs', restricted, hubsRouter);`.
-4. Make a GET request to `/api/hubs` to verify it returns a `401` status code.
-5. Show how to add the `password` header using `Postman`.
-6. Test the endpoint with correct and incorrect passwords.
+2. This bit of a middleware should not be applied to the entire router, because not all endpoints have ids. Explain that we can add it to specific route handlers as a second parameter:
+
+```js
+router.get('/:id', validateId, (req, res) => {});
+
+router.delete('/:id', validateId, (req, res) => {});
+
+router.put('/:id', validateId, (req, res) => {});
+
+router.get('/:id/messages', validateId, (req, res) => {});
+
+router.post('/:id/messages', validateId, (req, res) => {});
+```
+
+3. Hit various endpoints with valid and invalid ids to show the message.
+
+4. We could use this middleware to simplify some of our route handlers, such as `GET api/hubs/:id`:
+
+```js
+router.get('/:id', validateId, (req, res) => {
+  // we can greatly simplify this logic now 
+  const { hub } = req;
+  res.status(200).json(hub);
+});
+```
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
-### You Do (estimated 10 minutes to complete)
+### You Do (estimated 5 minutes to complete)
 
-Ask students to write a function called `only`. It should accept a `name` as it's only argument and return `middleware` that return a `403` status code if `req.headers.name` is different from the `name` specified.
+Ask students to write a middleware function called `requiredBody`. If `req.body` is not defined and is an empty object, it should cancel the request and send back a status `400` with the message `"Please include request body"`. 
 
-It is meant to be use like this: `server.use('/api/hubs', restricted, only('frodo'), hubsRouter);`. For this example if `req.headers.name` is not _"frodo"_ the request should be denied.
+Additionally, they should add it to the necessary endpoints within the hubs router.
 
 One possible solution:
 
 ```js
-function only(name) {
-  // returns the middleware
-  return function(req, res, next) {
-    const personName = req.headers.name || ''; // just in case there is no name header provided
-
-    // this function can use the parameter passed to the wrapper function
-    if (personName.toLowerCase() === name.toLowerCase()) {
-      next();
-    } else {
-      res.status(401).json({ message: 'You have no access to this resource' });
-    }
-  };
+function requiredBody(req, res, next) {
+  if (req.body && Object.keys(req.body).length > 0) {
+    next();
+  } else {
+    res.status(400).json({ message: "Please include request body" });
+  }
+}
 }
 ```
 
-Note that we can use more than one local `middleware`. We are using `restricted` and `only()` so we need to add both headers.
+It should be added to the `POST` and `PUT` requests:
 
-Test with different combinations of _authorization_ and _name_ headers.
+```js
+router.post('/', requiredBody, (req, res) => {});
+
+router.put('/:id', [ validateId, requiredBody], (req, res) => {});
+
+router.post('/:id/messages', [ validateId, requiredBody ], (req, res) => {});
+```
+
+Note that we can use more than one local `middleware`, such as on `PUT /api/hubs/:id` and `POST /api/hubs/:id/messages`.
+
+Test with the endpoints with missing bodies.
 
 ## Write Error Handling Middleware
 
