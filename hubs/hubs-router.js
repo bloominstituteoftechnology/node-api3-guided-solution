@@ -126,7 +126,7 @@ async function validateId(req, res, next) {
       req.hub = hub;
       next();
     } else {
-      res.status(404).json({ message: "Invalid id. Hub not found."})
+      res.status(404).json({ message: "Invalid id; hub not found"})
     }
   } else {
     next();
@@ -137,7 +137,7 @@ function requiredBody(req, res, next) {
   if (req.body && Object.keys(req.body).length > 0) {
     next();
   } else {
-    res.status(400).json({ message: "please include request body" });
+    res.status(400).json({ message: "Please include request body" });
   }
 }
 

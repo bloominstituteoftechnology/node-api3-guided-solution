@@ -1,7 +1,7 @@
 const express = require('express'); // importing a CommonJS module
-const logger = require('morgan');
 const helmet = require('helmet');
-const cors = require('cors');
+const logger = require('morgan');
+
 
 const hubsRouter = require('./hubs/hubs-router.js');
 
@@ -10,9 +10,8 @@ const server = express();
 // global middleware
 
 server.use(express.json());
-server.use(logger('dev'));
 server.use(helmet());
-server.use(cors());
+server.use(logger('dev'));
 
 // custom global middleware
 
