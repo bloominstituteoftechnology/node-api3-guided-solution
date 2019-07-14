@@ -261,7 +261,7 @@ Note that we can use more than one local `middleware`, such as on `PUT /api/hubs
 
 Test with the endpoints with missing bodies.
 
-## OPTIONAL IF TIME PERMITS: Write Error Handling Middleware
+## Write Error Handling Middleware (Optional - 10 minutes remaining)
 
 Use the content on TK to introduce how error handling middleware works. **Emphasize that order matters**, error handling middleware can catch errors that happen on all route handlers and middleware that precede it.
 
