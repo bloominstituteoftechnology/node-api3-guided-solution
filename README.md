@@ -187,17 +187,26 @@ Let's write something more useful that will help us send back detailed error mes
 1. At the bottom of the `hubs-router` file, write the following middleware:
 
 ```js
-async function validateId(req, res, next) {
+function validateId(req, res, next) {
   const { id } = req.params;
-  const hub = await Hubs.findById(id);
-  if (hub) {
-    // if the hub is found, we can store it in the req in case we need it in the request
-    req.hub = hub;
-    next();
-  } else {
-    // if the id is invalid and send back a detailed errore message
-    res.status(404).json({ message: "Invalid id; hub not found"})
-  }
+  Hubs.findById(id)
+  .then(hub => {
+    if (hub) {
+      // if the hub is found, we can store it in the req in case we need it in the request
+      req.hub = hub;
+      next();
+    } else {
+      // if the id is invalid and send back a detailed errore message
+      res.status(404).json({ message: "Invalid id; hub not found"})
+    }
+  })
+  .catch(error => {
+    // log error to server
+    console.log(error);
+    res.status(500).json({
+      message: 'Error processing request',
+    });
+  });
 }
 ```
 
@@ -226,6 +235,8 @@ router.get('/:id', validateId, (req, res) => {
 });
 ```
 
+5. Note that we could also simplify the logic in some of the other endpoints if we so choose
+
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
 ### You Do (estimated 5 minutes to complete)
@@ -243,7 +254,6 @@ function requiredBody(req, res, next) {
   } else {
     res.status(400).json({ message: "Please include request body" });
   }
-}
 }
 ```
 
