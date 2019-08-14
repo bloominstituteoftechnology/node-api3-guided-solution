@@ -290,23 +290,33 @@ We can route the request to the error handling middleware from any middleware or
 Change the `requiredBody` and `validateId` middleware to fire the error handling middleware.
 
 ```js
-async function validateId(req, res, next) {
+function validateId(req, res, next) {
   const { id } = req.params;
-  const hub = await Hubs.findById(id);
-  if (hub) {
-    req.hub = hub;
-    next();
-  } else {
-    // CHANGE CODE HERE:
-    next({ message: "Invalid id; hub not found"});
-  }
+  Hubs.findById(id)
+  .then(hub => {
+    if (hub) {
+      // if the hub is found, we can store it in the req in case we need it in the request
+      req.hub = hub;
+      next();
+    } else {
+      // CHANGE CODE HERE
+      next({ message: "Invalid id; hub not found"});
+    }
+  })
+  .catch(error => {
+    // log error to server
+    console.log(error);
+    res.status(500).json({
+      message: 'Error processing request',
+    });
+  });
 }
 
 function requiredBody(req, res, next) {
   if (req.body && Object.keys(req.body).length > 0) {
     next();
   } else {
-    // CHANGE CODE HERE:
+    // CHANGE CODE HERE
     next({ message: "Please include request body" }));
   }
 }
