@@ -1,6 +1,6 @@
-# Web API III Guided Project
+# Node API 3 Guided Project
 
-Guided project for **Web API III** module.
+Guided project for Node API module 3.
 
 In this project we will learn how to create a very simple Web API using `Node.js` and `Express`, and cover the basics of `server-side routing` and using global `middleware`.
 
@@ -8,17 +8,17 @@ The code for the guided project will be written in a single file for simplicity.
 
 ## Prerequisites
 
-- [Postman](https://www.getpostman.com/downloads/) installed.
+- A REST client like [Insomnia](https://insomnia.rest/download/) or [Postman](https://www.getpostman.com/downloads/) installed.
 
 ## Starter Code
 
-The [starter code](https://github.com/LambdaSchool/webapi-iii-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
+The [starter code](https://github.com/LambdaSchool/node-api3-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
 
 ## How to Use this Repository
 
-- clone the [starter code](https://github.com/LambdaSchool/webapi-iii-guided).
+- clone the [starter code](https://github.com/LambdaSchool/node-api3-guided).
 - create a solution branch: `git checkout -b solution`.
-- add this repository as a remote: `git remote add solution https://github.com/LambdaSchool/webapi-iii-guided-solution`
+- add this repository as a remote: `git remote add solution https://github.com/LambdaSchool/node-api3-guided-solution`
 - pull from this repository's `master` branch into the `solution` branch in your local folder `git pull solution master:solution --force`.
 
 A this point you should have a `master` branch pointing to the student's repository and a `solution` branch with the latest changes added to the solution repository.
@@ -39,12 +39,12 @@ Cover the three types.
 
 ## Use Third Party Middleware
 
-1. Run the server and visit the `/` endpoint using `Postman`.
+1. Run the server and visit the `/` endpoint using a REST client or the browser.
 1. Show the headers. There are 6 headers, one of them is `X-Powered-By: Express`. Explain how this is a security problem.
 1. Install `helmet` npm module.
 1. Require `helmet` inside `server.js`: `const helmet = require('helmet');`
 1. Use the `helmet` middleware: `server.use(helmet())`
-1. Send another request using `Postman`. We get security headers added and the `X-Powered-By: Express` is gone.
+1. Send another request using a REST client. We get security headers added and the `X-Powered-By: Express` is gone.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
@@ -108,7 +108,7 @@ function addName(req, res, next) {
 
 2. Make a request to the server and show that we are still not seeing the name appear.
 3. `Use` the middleware before the route handlers: `server.use(addName)`.
-5. Make a new request. The value was set by the _middleware_.
+4. Make a new request. The value was set by the _middleware_.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
@@ -133,8 +133,8 @@ function lockout(req, res, next) {
 ```
 
 3. `Use` the middleware before the route handlers: `server.use(lockout)`.
-5. Make requests to various endpoints to show we are locked out. 
-6. This middleware disables our entire api, so comment out where it is used:
+4. Make requests to various endpoints to show we are locked out.
+5. This middleware disables our entire api, so comment out where it is used:
 
 ```js
 // server.use(lockout);
@@ -167,7 +167,7 @@ What if we want to add middleware that affects a set of endpoints, but not other
 ## Use Middleware Locally
 
 1. Go to `hubs/hubs-router.js` file.
-2. Add the following piece of middleware at the top of the file. Note that `router.use` is also a function. 
+2. Add the following piece of middleware at the top of the file. Note that `router.use` is also a function.
 
 ```js
 router.use((req, res, next) => {
@@ -175,8 +175,9 @@ router.use((req, res, next) => {
   next();
 });
 ```
+
 3. Hit several endpoints on this router to verify that it works.
-4. Make a `GET /` request to verify that the middleware does not execute. 
+4. Make a `GET /` request to verify that the middleware does not execute.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
@@ -190,23 +191,23 @@ Let's write something more useful that will help us send back detailed error mes
 function validateId(req, res, next) {
   const { id } = req.params;
   Hubs.findById(id)
-  .then(hub => {
-    if (hub) {
-      // if the hub is found, we can store it in the req in case we need it in the request
-      req.hub = hub;
-      next();
-    } else {
-      // if the id is invalid and send back a detailed errore message
-      res.status(404).json({ message: "Invalid id; hub not found"})
-    }
-  })
-  .catch(error => {
-    // log error to server
-    console.log(error);
-    res.status(500).json({
-      message: 'Error processing request',
+    .then(hub => {
+      if (hub) {
+        // if the hub is found, we can store it in the req in case we need it in the request
+        req.hub = hub;
+        next();
+      } else {
+        // if the id is invalid and send back a detailed errore message
+        res.status(404).json({ message: 'Invalid id; hub not found' });
+      }
+    })
+    .catch(error => {
+      // log error to server
+      console.log(error);
+      res.status(500).json({
+        message: 'Error processing request',
+      });
     });
-  });
 }
 ```
 
@@ -230,7 +231,7 @@ router.post('/:id/messages', validateId, (req, res) => {});
 
 ```js
 router.get('/:id', validateId, (req, res) => {
-  // we can greatly simplify this logic 
+  // we can greatly simplify this logic
   res.status(200).json(req.hub);
 });
 ```
@@ -241,7 +242,7 @@ router.get('/:id', validateId, (req, res) => {
 
 ### You Do (estimated 5 minutes to complete)
 
-Ask students to write a middleware function called `requiredBody`. If `req.body` is not defined and is an empty object, it should cancel the request and send back a status `400` with the message `"Please include request body"`. 
+Ask students to write a middleware function called `requiredBody`. If `req.body` is not defined and is an empty object, it should cancel the request and send back a status `400` with the message `"Please include request body"`.
 
 Additionally, they should add it to the necessary endpoints within the hubs router.
 
@@ -252,7 +253,7 @@ function requiredBody(req, res, next) {
   if (req.body && Object.keys(req.body).length > 0) {
     next();
   } else {
-    res.status(400).json({ message: "Please include request body" });
+    res.status(400).json({ message: 'Please include request body' });
   }
 }
 ```
@@ -262,9 +263,9 @@ It should be added to the `POST` and `PUT` requests:
 ```js
 router.post('/', requiredBody, (req, res) => {});
 
-router.put('/:id', [ validateId, requiredBody], (req, res) => {});
+router.put('/:id', [validateId, requiredBody], (req, res) => {});
 
-router.post('/:id/messages', [ validateId, requiredBody ], (req, res) => {});
+router.post('/:id/messages', [validateId, requiredBody], (req, res) => {});
 ```
 
 Note that we can use more than one local `middleware`, such as on `PUT /api/hubs/:id` and `POST /api/hubs/:id/messages`.
