@@ -42,7 +42,7 @@ function addName(req, res, next) {
 }
 
 function lockout(req, res, next) {
-  res.status(403).json({ message: 'API lockout!'});
+  res.status(403).json({ message: 'API lockout!' });
 }
 
 function moodyGateKeeper(req, res, next) {
