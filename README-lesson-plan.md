@@ -23,7 +23,7 @@ Cover the three types.
 
 ### You Do (estimated time 5 mins)
 
-Ask students to install and use a `morgan`. Hint them to follow a link to `morgan` on Training Kit and read the documentation on how to use it.
+Ask students to install and use a `morgan`. Hint them to follow a link to `morgan` on Canvas and read the documentation on how to use it.
 
 Solution.
 
