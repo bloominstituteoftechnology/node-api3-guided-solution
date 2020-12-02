@@ -1,35 +1,8 @@
 # Node API 3 Guided Project
 
-Guided project for Node API module 3.
-
-In this project we will learn how to create a very simple Web API using `Node.js` and `Express`, and cover the basics of `server-side routing` and using global `middleware`.
-
-The code for the guided project will be written in a single file for simplicity. We'll see ways to structure an API to make it more maintainable in upcoming lectures.
-
-## Prerequisites
-
-- A REST client like [Insomnia](https://insomnia.rest/download/) or [Postman](https://www.getpostman.com/downloads/) installed.
-
-## Starter Code
-
-The [starter code](https://github.com/LambdaSchool/node-api3-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
-
-## How to Use this Repository
-
-- clone the [starter code](https://github.com/LambdaSchool/node-api3-guided).
-- create a solution branch: `git checkout -b solution`.
-- add this repository as a remote: `git remote add solution https://github.com/LambdaSchool/node-api3-guided-solution`
-- pull from this repository's `master` branch into the `solution` branch in your local folder `git pull solution master:solution --force`.
-
-A this point you should have a `master` branch pointing to the student's repository and a `solution` branch with the latest changes added to the solution repository.
-
-When making changes to the `solution` branch, commit the changes and type `git push solution solution:master` to push them to this repository.
-
-When making changes to the `master` branch, commit the changes and use `git push origin master` to push them to the student's repository.
-
 ## Introduce Middleware
 
-Use the content on Training Kit to introduce the `middleware`.
+Use the content on Canvas to introduce the `middleware`.
 
 Cover the three types.
 
