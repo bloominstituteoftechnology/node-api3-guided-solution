@@ -22,8 +22,8 @@ server.use(addName);
 
 server.use('/api/hubs', hubsRouter);
 
-server.get('/', (req, res, next) => {
-  const nameInsert = (req.name) ? ` ${req.name}` : '';
+server.get('/', (req, res) => {
+  const nameInsert = req.name || '';
 
   res.send(`
     <h2>Lambda Hubs API</h2>
