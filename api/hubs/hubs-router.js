@@ -1,4 +1,5 @@
 const express = require('express');
+const yup = require('yup'); // stretch, if there is time
 
 const Hubs = require('./hubs-model.js');
 const Messages = require('../messages/messages-model.js');
@@ -30,7 +31,7 @@ router.get('/:id', validateId, (req, res) => {
   res.status(200).json(req.hub);
 });
 
-router.post('/', requiredBody, (req, res) => {
+router.post('/', requiredBody, validateHub, (req, res) => {
   Hubs.add(req.body)
     .then(hub => {
       res.status(201).json(hub);
@@ -144,6 +145,29 @@ function requiredBody(req, res, next) {
 
     // error handling middleware option:
     // next({ message: "Please include request body" }));
+  }
+}
+
+const hubSchema = yup.object().shape({ // stretch, if there is time
+  name: yup
+    .string()
+    .typeError('it needs to be a string!')
+    .trim('only whitespace does not count')
+    .required('the name is required')
+    .min(3, 'name has to be 3 chars long')
+    .max(10, 'name should be 10 chars tops')
+})
+
+async function validateHub (req, res, next) { // stretch, if there is time
+  try {
+    const validated = await hubSchema.validate(
+      req.body,
+      { strict: true, stripUnknown: true },
+    )
+    req.body = validated
+    next()
+  } catch (err) {
+    res.json(err.message)
   }
 }
 
