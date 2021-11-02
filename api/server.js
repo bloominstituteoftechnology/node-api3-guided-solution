@@ -26,8 +26,8 @@ server.get('/', (req, res) => {
   const nameInsert = req.name || '';
 
   res.send(`
-    <h2>Lambda Hubs API</h2>
-    <p>Welcome${nameInsert} to the Lambda Hubs API</p>
+    <h2>Hubs API</h2>
+    <p>Welcome${nameInsert} to the Hubs API</p>
     `);
 });
 
