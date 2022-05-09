@@ -16,11 +16,11 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
-    "@vscode/sqlite3": "5.0.7",
     "express": "^4.17.3",
     "helmet": "^5.0.2",
-    "knex": "^1.0.4",
     "morgan": "^1.10.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "knex": "^2.0.0",
+    "sqlite3": "^5.0.8"
   }
 }
