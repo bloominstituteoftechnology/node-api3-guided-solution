@@ -11,16 +11,16 @@
     "url": "git+https://github.com/BloomInstituteOfTechnology/node-api3-guided-solution.git"
   },
   "devDependencies": {
-    "eslint": "^8.11.0",
+    "eslint": "^8.35.0",
     "knex-cleaner": "^1.3.1",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.21"
   },
   "dependencies": {
-    "express": "^4.17.3",
-    "helmet": "^5.0.2",
+    "express": "^4.18.2",
+    "helmet": "^6.0.1",
     "morgan": "^1.10.0",
-    "yup": "^0.32.11",
-    "knex": "^2.0.0",
-    "sqlite3": "^5.0.8"
+    "yup": "^1.0.2",
+    "knex": "^2.4.2",
+    "sqlite3": "^5.1.4"
   }
 }
